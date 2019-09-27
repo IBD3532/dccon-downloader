@@ -3,10 +3,11 @@ import urllib.request
 import urllib.parse
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
 import requests
 
 url1="https://dccon.dcinside.com/hot/1/title/"
-url2 = urllib.parse.quote_plus(str(input("ê²€ìƒ‰ì–´ë¥¼ ì…ë ¥í•˜ì„¸ìš”.")))
+url2 = urllib.parse.quote_plus(str(input("°Ë»ö¾î¸¦ ÀÔ·ÂÇÏ¼¼¿ä.")))
 web_url = url1+url2
 namelist = []
 idxlist = []
@@ -20,12 +21,21 @@ with urllib.request.urlopen(web_url) as response:
         name = a.find('strong')
         namelist.append([name.text,i['package_idx']])
 
-
-print(namelist)
-num = int(input("ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš”"))
+temp = 0
+for i in namelist:
+    print(str(temp) + "." + str(i[0]))
+    temp+=1
+num = int(input("¹øÈ£¸¦ ÀÔ·ÂÇÏ¼¼¿ä: "))
 finalurl = web_url + "#" + namelist[num][1]
 
-driver = webdriver.PhantomJS('./phantomjs/bin/phantomjs.exe')
+print("\nºê¶ó¿ìÀú ½ÇÇà Áß..")
+options = Options()
+options.binary_loction = "./chrome/ChromePortable.exe"
+options.add_argument('headless')
+options.add_argument("--disable-gpu")
+options.add_argument('lang=ko_KR')
+driver = webdriver.Chrome('./chrome/chromedriver.exe',options=options)
+
 driver.get(finalurl)
 unorder = driver.find_element_by_class_name('dccon_list')
 lis = unorder.find_elements_by_tag_name('li')
@@ -35,9 +45,13 @@ opener=urllib.request.build_opener()
 opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36'),('referer',finalurl)]
 urllib.request.install_opener(opener)
 
+print("´Ù¿î·Îµå¸¦ ½ÃÀÛÇÕ´Ï´Ù.")
 for i in lis:
     sp = i.find_element_by_tag_name('span')
-    img = sp.find_element_by_tag_name("img")  # ì´ë¯¸ì§€ íƒœê·¸
-    img_src = img.get_attribute('src') # ì´ë¯¸ì§€ ê²½ë¡œ
+    img = sp.find_element_by_tag_name("img")  # ÀÌ¹ÌÁö ÅÂ±×
+    img_src = img.get_attribute('src') # ÀÌ¹ÌÁö °æ·Î
     urllib.request.urlretrieve(img_src, "./img/" + str(imgname) + '.jpg')
     imgname+=1
+    print("ÀúÀå Áß(" + str(imgname) + "/" + str(len(lis)) + ")")
+print("´Ù¿î·Îµå¸¦ ¿Ï·áÇß½À´Ï´Ù.")
+driver.quit()
