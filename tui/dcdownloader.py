@@ -11,7 +11,6 @@ def main():
     url2 = urllib.parse.quote_plus(str(input("검색어를 입력하세요.")))
     web_url = url1+url2
     namelist = []
-    idxlist = []
     with urllib.request.urlopen(web_url) as response:
         html = response.read()
         soup = BeautifulSoup(html, 'html.parser')
@@ -35,6 +34,7 @@ def main():
     options.add_argument('headless')
     options.add_argument("--disable-gpu")
     options.add_argument('lang=ko_KR')
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
     driver = webdriver.Chrome('./chrome/chromedriver.exe',options=options)
 
     driver.get(finalurl)
