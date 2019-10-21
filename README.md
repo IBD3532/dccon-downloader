@@ -3,7 +3,7 @@
 
 
 ## 요구사항
-* ~~BeautifulSoup~~
+* BeautifulSoup
 * ~~Selenium~~
 * Python3
 
