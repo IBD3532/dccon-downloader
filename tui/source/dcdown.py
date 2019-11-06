@@ -20,7 +20,7 @@ def getlist(pg,url2):
 def main():
     url2 = "/title/" + str(input("검색어를 입력하세요: "))
     web_url = "https://dccon.dcinside.com/hot/1"+url2
-    
+    selindex=[]
     i=1
     with requests.get(web_url) as response:
         #html = response.read()
@@ -45,25 +45,29 @@ def main():
             for idx, con in enumerate(dclist):
                 print("[ {:^3} ]:".format(idx),con[0])
             print("페이지 (",i,"/",endpg,")")
-            inp = str(input("번호를 입력하세요(이전:b,다음:n): "))
-            if inp == 'n' or inp == 'N':
-                if i==endpg:
-                    print("마지막 페이지입니다.")
+            inps = str(input("번호를 입력하세요(이전:b,다음:n): ")).split()
+            for inp in inps:
+                if inp == 'n' or inp == 'N':
+                    if i==endpg:
+                        print("마지막 페이지입니다.")
+                    else:
+                        i+=1
+                elif inp == 'b' or inp == 'B':
+                    if i==1:
+                        print("첫번째 페이지입니다.")
+                    else:
+                        i-=1
+                elif int(inp) >= 0 and int(inp)<len(dclist):
+                    selindex.append(dclist[int(inp)][1])
                 else:
-                    i+=1
-            elif inp == 'b' or inp == 'B':
-                if i==1:
-                    print("첫번째 페이지입니다.")
-                else:
-                    i-=1
-            elif int(inp) >= 0 and int(inp)<len(dclist):
-                selindex=dclist[int(inp)][1]
+                    print("잘못 입력했습니다.")
+            if len(selindex) >= 1:
                 break
-            else:
-                print("잘못 입력했습니다.")
         except ValueError:
             print("값이 잘못됐습니다.")
-    dconlib.condown(selindex)
+    print()
+    for dlist in selindex:
+        dconlib.condown(dlist)
     print("\n다운로드를 완료했습니다.")
     sleep(2)
     
