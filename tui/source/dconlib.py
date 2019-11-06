@@ -8,6 +8,16 @@ from bs4 import BeautifulSoup
 from io import BytesIO
 from io import StringIO
 import base64
+import time
+
+
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, bar, percent, suffix), end = printEnd)
+    if iteration == total: 
+        print()
 
 def conlist(idxnum):
     condata=[]
@@ -40,9 +50,11 @@ def condown(indexnum):
     mf = BytesIO()
     condata = conlist(indexnum)
     with zipfile.ZipFile(mf, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        for data in condata[1:]:
-            imgfile= getcon(data[2])
-            zipf.writestr(condata[0]+"/"+data[0]+'.'+data[1],imgfile)
+        l=len(condata[1:])
+        for i, con in enumerate(condata[1:]):
+            imgfile= getcon(con[2])
+            zipf.writestr(condata[0]+"/"+con[0]+'.'+con[1],imgfile)
+            printProgressBar(i + 1, l, prefix = condata[0]+':', suffix = '완료', length = 20)
         zipf.close()
     with open(condata[0]+".zip", "wb") as f:
         f.write(mf.getvalue())
